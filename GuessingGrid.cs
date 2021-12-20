@@ -15,6 +15,14 @@ namespace src
 			}
 		}
 
+		public void ChangeState(int x, int y, bool isShip)
+		{
+			if (isShip)
+				firingBoard[y, x] = State.Ship;
+			else
+				firingBoard[y, x] = State.Empty;
+		}
+
 		public void Display()
 		{
 
