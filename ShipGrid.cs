@@ -163,6 +163,7 @@ namespace src
                 for (Column = 0; Column < gridSize; Column++)
                     Console.Write(grid[Column, Row] + " ");
             }
+        }
     }
 }
 
