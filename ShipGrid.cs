@@ -153,10 +153,16 @@ namespace src
 
         public void Display()
         {
-
-        }
-
-
+            int gridSize = 10;
+            int Row;
+            int Column;
+            Console.WriteLine("Welcome to the Battleship game");
+            for (Row = 0; Row < gridSize; Row++)
+            {
+                Console.WriteLine();
+                for (Column = 0; Column < gridSize; Column++)
+                    Console.Write(grid[Column, Row] + " ");
+            }
     }
 }
 
