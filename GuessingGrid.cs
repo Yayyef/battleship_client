@@ -5,8 +5,11 @@ namespace src
 	public class GuessingGrid
 	{
 		State[,] firingBoard;
+        public int length, width;
 		public GuessingGrid(int h, int w)
 		{
+            length = h;
+            width = w;
 			firingBoard = new State[h, w];
 			for (int i = 0; i < h; i++)
 			{
