@@ -35,7 +35,7 @@ namespace src
                         continue;
                     }
                     int firstCoord = position[0] - 'a', secondCoord = int.Parse(position.Substring(1)) - 1;
-                    Console.WriteLine("In what direction should it lay (up/down/left/right?");
+                    Console.WriteLine("In what direction should it lay (up/down/left/right) ?");
                     string direction = Console.ReadLine().ToLower();
                     isOutOfBounds = !battleField.AddShip(myTroops[i], firstCoord, secondCoord, direction);
 
