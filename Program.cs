@@ -46,54 +46,16 @@ namespace src
 
             battleField.Display();
 
+            client client = new client();
+            client.ConnectServer();
+
             //Client loop
 
-            int clientShips = 3;
+            int serverShips = 3;
 
-            while (clientShips > 0 && myTroops.Count > 0)
+            while (serverShips > 0 && myTroops.Count > 0)
             {
-                /*
-                string enemyChoice = server.GetPosition(coordinates);
-                if (enemyChoice == "")
-                    break;
-                Console.WriteLine("The ennemy is firing at " + enemyChoice);
-                Ship s = battleField.grid[coordinates[1], coordinates[0]];
-                if (s != null)
-                {
-                    battleField.grid[coordinates[1], coordinates[0]] = null;
-                    s.health--;
-                    battleField.Display();
-                    if (s.health == 0)
-                    {
-                        Console.WriteLine("... and BOOM you got hit !");
-                        server.SendResponse("sunk");
-                        myTroops.Remove(s);
-                        Console.WriteLine("your ship got destroyed :'(");
-                        Console.WriteLine("you have " + myTroops.Count + " ship(s) left");
-
-                    }
-                    else
-                    {
-                        Console.WriteLine("... and BOOM you got hit !");
-                        server.SendResponse("hit");
-                    }
-
-                }
-
-                else
-                {
-                    battleField.Display();
-                    Console.WriteLine("... and he missed ! What a loser");
-                    server.SendResponse("missed");
-                }
-
-                if (myTroops.Count == 0)
-                {
-                    Console.WriteLine("Game over, you lost");
-                    break;
-                }
-
-                //Au tour du serveur, on affiche la grille de l'ennemi(e)
+                //Au tour du client, on affiche la grille de l'ennemi(e)
                 g.Display();
 
                 int x = 0, y = 0;
@@ -122,26 +84,29 @@ namespace src
 
                 }
 
-                server.SendResponse(input);
-                string response = server.GetResponse();
+                client.SendResponse(input);
+                string response = client.GetResponse();
                 switch (response)
                 {
                     case "missed":
                         {
                             g.ChangeState(x, y, false);
+                            Console.WriteLine("You missed !!");
                             break;
 
                         }
                     case "hit":
                         {
                             g.ChangeState(x, y, true);
+                            Console.WriteLine("You hit !! Well played");
                             break;
                         }
 
                     case "sunk":
                         {
                             g.ChangeState(x, y, true);
-                            clientShips--;
+                            Console.WriteLine("You hit and sunk their ship !! Congratz");
+                            serverShips--;
                             break;
                         }
                     default:
@@ -151,7 +116,48 @@ namespace src
                         }
                 }
 
-                */
+                string enemyChoice = client.GetPosition(coordinates);
+                if (enemyChoice == "")
+                    break;
+                Console.WriteLine("The ennemy is firing at " + enemyChoice);
+                Ship s = battleField.grid[coordinates[1], coordinates[0]];
+                if (s != null)
+                {
+                    battleField.grid[coordinates[1], coordinates[0]] = null;
+                    s.health--;
+                    battleField.Display();
+                    if (s.health == 0)
+                    {
+                        Console.WriteLine("... and BOOM you got hit !");
+                        client.SendResponse("sunk");
+                        myTroops.Remove(s);
+                        Console.WriteLine("your ship got destroyed :'(");
+                        Console.WriteLine("you have " + myTroops.Count + " ship(s) left");
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("... and BOOM you got hit !");
+                        client.SendResponse("hit");
+                    }
+
+                }
+
+                else
+                {
+                    battleField.Display();
+                    Console.WriteLine("... and he missed ! What a loser");
+                    client.SendResponse("missed");
+                }
+
+                if (myTroops.Count == 0)
+                {
+                    Console.WriteLine("Game over, you lost");
+                    break;
+                }
+
+                
+                
 
             }
 
