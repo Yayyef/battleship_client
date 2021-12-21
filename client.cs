@@ -27,7 +27,7 @@ namespace src
 
                 // Creation TCP/IP Socket using
                 // Socket Class Constructor
-                Socket sender = new Socket(ipAddr.AddressFamily,
+                clientSocket = new Socket(ipAddr.AddressFamily,
                            SocketType.Stream, ProtocolType.Tcp);
 
                 try
@@ -35,12 +35,12 @@ namespace src
 
                     // Connect Socket to the remote
                     // endpoint using method Connect()
-                    sender.Connect(localEndPoint);
+                    clientSocket.Connect(localEndPoint);
 
                     // We print EndPoint information
                     // that we are connected
-                    Console.WriteLine("You're successfully connected now! ",
-                                  sender.RemoteEndPoint.ToString());
+                    Console.WriteLine("You're successfully connected now! -> {0} ",
+                                  clientSocket.RemoteEndPoint.ToString());
 
                 }
 
@@ -77,16 +77,20 @@ namespace src
 
         public string GetPosition(int[] outPos)
         {
-
             int received = clientSocket.Receive(data);
-            string position = Encoding.ASCII.GetString(data, 0, received).ToLower();
-            if (!GetCoord(position, outPos))
+            string msg= Encoding.ASCII.GetString(data,0,received);
+            while (clientSocket.Available > 0)
             {
-                Console.WriteLine("Bad input from client. Aborting...");
-                return "";
+                received = clientSocket.Receive(data);
+                msg += Encoding.ASCII.GetString(data,0,received);
             }
-
-            return position;
+                if (!GetCoord(msg, outPos))
+                {
+                    Console.WriteLine("Bad input from client. Aborting...");
+                    return "";
+                }
+            
+            return msg;
         }
 
         public void SendResponse(string message)
@@ -96,8 +100,6 @@ namespace src
                 Console.WriteLine("Start the server before sending positions stupid");
                 return;
             }
-
-
             data = Encoding.ASCII.GetBytes(message);
             clientSocket.Send(data);
         }
@@ -111,7 +113,15 @@ namespace src
             }
 
             int received = clientSocket.Receive(data);
-            return Encoding.ASCII.GetString(data, 0, received).ToLower();
+            string msg = Encoding.ASCII.GetString(data,0,received);
+            while (clientSocket.Available > 0)
+            {
+                received = clientSocket.Receive(data);
+                msg += Encoding.ASCII.GetString(data,0,received);
+            }
+
+
+            return msg;
 
         }
         ~Client()
@@ -128,8 +138,8 @@ namespace src
         {
             if (position.Length < 2)
                 return false;
-            coord[1] = position[0] - 'a';
-            coord[2] = int.Parse(position.Substring(1)) - 1;
+            coord[0] = position[0] - 'a';
+            coord[1] = Convert.ToInt32(position.Substring(1)) - 1;
             if (coord[0] < 0 || coord[0] > 9 || coord[1] < 0 || coord[1] > 9)
                 return false;
             return true;

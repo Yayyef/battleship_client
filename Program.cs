@@ -7,7 +7,7 @@ namespace src
 {
     internal class Program
     {
-
+        private static int[] coordinates = new int[2];
         static void Main(string[] args)
         {
 
@@ -46,7 +46,7 @@ namespace src
 
             battleField.Display();
 
-            client client = new client();
+            Client client = new Client();
             client.ConnectServer();
 
             //Client loop
@@ -86,6 +86,7 @@ namespace src
 
                 client.SendResponse(input);
                 string response = client.GetResponse();
+                Console.WriteLine(response);
                 switch (response)
                 {
                     case "missed":
