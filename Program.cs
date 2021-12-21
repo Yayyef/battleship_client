@@ -52,7 +52,7 @@ namespace src
 
             while (clientShips > 0 && myTroops.Count > 0)
             {
-                /*
+                
                 string enemyChoice = server.GetPosition(coordinates);
                 if (enemyChoice == "")
                     break;

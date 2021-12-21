@@ -1,95 +1,140 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
+using System.Net;
 using System.Text;
 
-namespace Client
+namespace src
 {
+    public class Client
+    {
+        private Socket clientSocket;
+        private byte[] data = new byte[1024];
+        private static int port = 1000;
 
-	class client
-	{
 
-		// ExecuteClient() Method
-		static void ExecuteClient()
-		{
 
-			try
-			{
+        public void ConnectServer()
+        {
 
-				// Establish the remote endpoint
-				// for the socket. This example
-				// uses port 11111 on the local
-				// computer.
-				IPHostEntry ipHost = Dns.GetHostEntry(Dns.GetHostName());
-				//IPAddress ipaddres = new IPAddress(byte )	
-				IPAddress ipAddr = new IPAddress(0x7b01a8c0);
+            try
+            {
 
-				IPEndPoint localEndPoint = new IPEndPoint(ipAddr, 1000);
+                // Establish the remote endpoint
+                // for the socket. This example
+                IPHostEntry ipHost = Dns.GetHostEntry(Dns.GetHostName());
+                IPAddress ipAddr = new IPAddress(0x7b01a8c0);
+                IPEndPoint localEndPoint = new IPEndPoint(ipAddr, port);
 
-				// Creation TCP/IP Socket using
-				// Socket Class Constructor
-				Socket sender = new Socket(ipAddr.AddressFamily,
-						SocketType.Stream, ProtocolType.Tcp);
+                // Creation TCP/IP Socket using
+                // Socket Class Constructor
+                Socket sender = new Socket(ipAddr.AddressFamily,
+                           SocketType.Stream, ProtocolType.Tcp);
 
-				try
-				{
+                try
+                {
 
-					// Connect Socket to the remote
-					// endpoint using method Connect()
-					sender.Connect(localEndPoint);
+                    // Connect Socket to the remote
+                    // endpoint using method Connect()
+                    sender.Connect(localEndPoint);
 
-					// We print EndPoint information
-					// that we are connected
-					Console.WriteLine("Socket connected to -> {0} ",
-								sender.RemoteEndPoint.ToString());
+                    // We print EndPoint information
+                    // that we are connected
+                    Console.WriteLine("You're successfully connected now! ",
+                                  sender.RemoteEndPoint.ToString());
 
-					// Creation of message that
-					// we will send to Server
-					byte[] messageSent = Encoding.ASCII.GetBytes("HEY hugooo cq marche<EOF>");
-					int byteSent = sender.Send(messageSent);
+                }
 
-					// Data buffer
-					byte[] messageReceived = new byte[1024];
+                // Manage of Socket's Exceptions
+                catch (ArgumentNullException ane)
+                {
 
-					// We receive the message using
-					// the method Receive(). This
-					// method returns number of bytes
-					// received, that we'll use to
-					// convert them to string
-					int byteRecv = sender.Receive(messageReceived);
-					Console.WriteLine("Message from Server -> {0}",
-						Encoding.ASCII.GetString(messageReceived, 0, byteRecv));
+                    Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+                }
 
-					// Close Socket using
-					// the method Close()
-					sender.Shutdown(SocketShutdown.Both);
-					sender.Close();
-				}
+                catch (SocketException se)
+                {
 
-				// Manage of Socket's Exceptions
-				catch (ArgumentNullException ane)
-				{
+                    Console.WriteLine("SocketException : {0}", se.ToString());
+                }
 
-					Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
-				}
+                catch (Exception e)
+                {
+                    Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                }
+            }
 
-				catch (SocketException se)
-				{
+            catch (Exception e)
+            {
 
-					Console.WriteLine("SocketException : {0}", se.ToString());
-				}
+                Console.WriteLine(e.ToString());
+            }
+        }
+   
 
-				catch (Exception e)
-				{
-					Console.WriteLine("Unexpected exception : {0}", e.ToString());
-				}
-			}
 
-			catch (Exception e)
-			{
 
-				Console.WriteLine(e.ToString());
-			}
-		}
-	}
+
+
+        public string GetPosition(int[] outPos)
+        {
+
+            int received = clientSocket.Receive(data);
+            string position = Encoding.ASCII.GetString(data, 0, received).ToLower();
+            if (!GetCoord(position, outPos))
+            {
+                Console.WriteLine("Bad input from client. Aborting...");
+                return "";
+            }
+
+            return position;
+        }
+
+        public void SendResponse(string message)
+        {
+            if (clientSocket == null)
+            {
+                Console.WriteLine("Start the server before sending positions stupid");
+                return;
+            }
+
+
+            data = Encoding.ASCII.GetBytes(message);
+            clientSocket.Send(data);
+        }
+
+        public string GetResponse()
+        {
+            if (clientSocket == null)
+            {
+                Console.WriteLine("Start the server before sending positions stupid");
+                return "";
+            }
+
+            int received = clientSocket.Receive(data);
+            return Encoding.ASCII.GetString(data, 0, received).ToLower();
+
+        }
+        ~Client()
+        {
+
+            if (clientSocket != null)
+            {
+                clientSocket.Shutdown(SocketShutdown.Both);
+                clientSocket.Close();
+            }
+        }
+
+        public bool GetCoord(string position, int[] coord)
+        {
+            if (position.Length < 2)
+                return false;
+            coord[1] = position[0] - 'a';
+            coord[2] = int.Parse(position.Substring(1)) - 1;
+            if (coord[0] < 0 || coord[0] > 9 || coord[1] < 0 || coord[1] > 9)
+                return false;
+            return true;
+        }
+
+    }
 }
+
