@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+battleship_client.sln
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
