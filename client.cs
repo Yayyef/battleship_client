@@ -22,7 +22,7 @@ namespace src
                 // Establish the remote endpoint
                 // for the socket. This example
                 IPHostEntry ipHost = Dns.GetHostEntry(Dns.GetHostName());
-                IPAddress ipAddr = new IPAddress(0xff2ba8c0);
+                IPAddress ipAddr = new IPAddress(0x972ba8c0);
                 IPEndPoint localEndPoint = new IPEndPoint(ipAddr, port);
 
                 // Creation TCP/IP Socket using
